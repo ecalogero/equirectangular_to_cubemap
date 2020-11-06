@@ -1,0 +1,25 @@
+{
+  "name": "skybox_offline_processing",
+  "version": "1.0.0",
+  "description": "A script to process and convert equirectangular 3D photos from Samsung 360 camera to skybox format ready for three,js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "360",
+    "photos",
+    "equrectangular",
+    "skybox"
+  ],
+  "author": "Erica Calogero",
+  "license": "ISC",
+  "dependencies": {
+    "browserify-fs": "^1.0.0",
+    "jimp": "^0.16.1",
+    "moment": "^2.29.1",
+    "panorama-to-cubemap": "^1.0.1",
+    "ptp": "^2.1.0"
+  }
+}
