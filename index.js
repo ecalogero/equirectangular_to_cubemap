@@ -6,10 +6,10 @@ const util = require("util");
 const {convertImage} = require('panorama-to-cubemap'); //https://www.npmjs.com/package/panorama-to-cubemap
 
 const readdir = util.promisify(fs.readdir);
-const rename = util.promisify(fs.rename);
+//const rename = util.promisify(fs.rename);
 const copyFile = util.promisify(fs.copyFile);
 
-const SOURCE_DIRECTORY = "D:/foldername/DCIM100";
+const SOURCE_DIRECTORY = "C:/Users/User/Pictures/equirectangular/solway/";
 const TARGET_DIRECTORY = "C:/Users/User/Pictures/SkyBoxes/";
 
 async function myMain() {
@@ -26,7 +26,7 @@ async function myMain() {
   } else {
     const targetPath = TARGET_DIRECTORY + moment().format('MMMM Do YYYY, h_mm_ss a');
     console.log(targetPath);
-    await makeNewDirectory(targetPath);
+    makeNewDirectory(targetPath);
     generateSkyBoxes(inputPictures, targetPath);
   } 
 }
@@ -39,8 +39,10 @@ myMain();
     for (let i= 0; i < inputPictures.length; i++){
       //make this into a separate function
       let picture = inputPictures[i]
-      const picPath = "./" + picture.slice(0,-4);
-      await makeNewDirectory(picPath);
+      //console.log("Picture: ", picture)
+      //TODO add more validation for picture.split
+      const picPath = targetPath + "/" + picture.split(".")[0];
+      makeNewDirectory(picPath);
       await convertImage(SOURCE_DIRECTORY + "/" + picture);
 
       const sides = ["nz", "pz", "py", "ny", "px", "nx"];
@@ -52,7 +54,7 @@ myMain();
       for(let side of sides){
         const oldPath = "./" + side + ".jpg";
         const newPath = picPath + oldPath.slice(1);
-        await moveFile(oldPath, newPath);
+        moveFile(oldPath, newPath);
         //this code isn't working yet, not sure why. I'm trying to archive a copy of each image to a set folder in '.../Pictures'
         // const target = targetPath + picPath;
         // await makeNewDirectory(target);
@@ -65,11 +67,11 @@ myMain();
   }//end of function generateSkyBoxes
 
  //Function to move the files
- async function moveFile(oldPath, newPath){ 
+ function moveFile(oldPath, newPath){ 
   try {
-    await rename(oldPath, newPath);
+    fs.renameSync(oldPath, newPath);
   } catch (err) {
-    console.log(err);
+    console.log(`moveFile(${oldPath}, ${newPath})`, err);
   }
  }
 
@@ -82,15 +84,9 @@ myMain();
   }
  }
 
-async function makeNewDirectory(path){
-  await fs.mkdir(path,{recursive: true} ,function(err) {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log("New directory successfully created: " + path);
-      return path;
-    }
-  });
+function makeNewDirectory(path){
+  const created = fs.mkdirSync(path,{recursive: true})
+  console.log(`makeNewDirectory(${path})`, created)
 }
 
   //This part reads the directory where it expects to find the input photos (equirectangular)
